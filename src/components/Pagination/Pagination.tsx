@@ -3,7 +3,7 @@ import React from 'react';
 interface PaginationProps {
   total: number;
   perPage: number;
-  currentPage: number;
+  currentPage?: number;
   onPageChange: (page: number) => void;
   onPerPageChange: (perPage: number) => void;
 }
@@ -11,7 +11,7 @@ interface PaginationProps {
 export const Pagination: React.FC<PaginationProps> = ({
   total,
   perPage,
-  currentPage,
+  currentPage = 1,
   onPageChange,
   onPerPageChange,
 }) => {
@@ -20,40 +20,39 @@ export const Pagination: React.FC<PaginationProps> = ({
   const startItem = (currentPage - 1) * perPage + 1;
   const endItem = Math.min(currentPage * perPage, total);
 
-  // стабильный массив опций для perPage
   const perPageOptions = [3, 5, 10, 20];
 
   return (
     <div>
       <ul className="pagination">
-        {/* Prev */}
         <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-          <button
+          <a
             data-cy="prevLink"
             aria-disabled={currentPage === 1}
             onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
           >
             «
-          </button>
+          </a>
         </li>
 
-        {/* Page numbers */}
         {pages.map(page => (
           <li
             key={`page-${page}`}
             className={`page-item ${page === currentPage ? 'active' : ''}`}
           >
-            <button data-cy="pageLink" onClick={() => onPageChange(page)}>
+            <a
+              data-cy="pageLink"
+              onClick={() => page !== currentPage && onPageChange(page)}
+            >
               {page}
-            </button>
+            </a>
           </li>
         ))}
 
-        {/* Next */}
         <li
           className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}
         >
-          <button
+          <a
             data-cy="nextLink"
             aria-disabled={currentPage === totalPages}
             onClick={() =>
@@ -61,16 +60,14 @@ export const Pagination: React.FC<PaginationProps> = ({
             }
           >
             »
-          </button>
+          </a>
         </li>
       </ul>
 
-      {/* Page info */}
       <div data-cy="info">
         Page {currentPage} (items {startItem} - {endItem} of {total})
       </div>
 
-      {/* perPage selector */}
       <select
         data-cy="perPageSelector"
         value={perPage}
